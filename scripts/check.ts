@@ -655,6 +655,22 @@ for (const s of SECTIONS) {
   if (!body.includes('# ざっくり言うと')) warn(`教本 ${s.id}: 「# ざっくり言うと」がない`);
   if (!body.includes('# この節のまとめ')) warn(`教本 ${s.id}: 「# この節のまとめ」がない（チェックシートに載らない）`);
   if (!body.includes('> **試験のポイント**')) warn(`教本 ${s.id}: 「> **試験のポイント**」がない`);
+  // ★ **上の includes は「1 つでもあれば通る」ので、崩れた見出しを見逃します。**
+  //   `ho-33` は「> **試験のポイード**」を持ったまま、どの検査にも掛かりませんでした
+  //   （2026 年 9 月 21 日。別の目でのレビューで見つけてもらった）。
+  //   同じ節に正しい見出しがもう 1 本あったので、includes が真になっていたのです。
+  //   **digest.ts は完全一致でしか拾わないので、崩れた 1 本は黙ってチェックシートから落ちます。**
+  //   引用の中の強調（見出しではない一文）は使ってよいので、
+  //   **「試験の」「よくある」で始まるのに一致しないもの**だけをエラーにしています。
+  for (const line of body.split(LF)) {
+    const head = /^> \*\*([^*]+)\*\*/.exec(line);
+    if (head === null) continue;
+    const name = head[1];
+    if (name === '試験のポイント' || name === 'よくある勘違い') continue;
+    if (/^試験の|^よくある/.test(name)) {
+      err(`教本 ${s.id}: 引用の見出し「${name}」が崩れている（digest.ts は完全一致でしか拾わないので、チェックシートに載らない）`);
+    }
+  }
   // この試験は 1 問あたり 5 分 24 秒あり、速さより「数字と条件を覚えているか」で決まる。
   // 保安距離・貯蔵能力・容器再検査の期間・爆発範囲は一問一答が向くので、薄い節を数える。
   const quizzes = body.split(LF).filter((l) => l.includes('::')).length;
@@ -883,6 +899,13 @@ const plannedTitles = new Map<string, string>();
 }
 
 const titleToId = new Map(SECTIONS.map((s) => [s.title, s.id]));
+
+// ★ 学識だけは、甲種化学（`gk-`）と甲種機械（`gm-`）で中身が完全に別で、
+//   **読者はどちらか一方しか読みません。**相互にリンクすると、
+//   受けない区分の節へ飛ばすことになります（CLAUDE.md の検証観点 4／00-common.md §6）。
+//   節の id の接頭辞だけで機械的に分かるので、検査にしてあります。
+const gakushikiSide = (id: string): 'gk' | 'gm' | null =>
+  /^gk-\d+$/.test(id) ? 'gk' : /^gm-\d+$/.test(id) ? 'gm' : null;
 const linkRe = /\[([^\]]+)\]\(([^)\s]+)\)/g;
 for (const s of SECTIONS) {
   let m: RegExpExecArray | null;
@@ -896,6 +919,15 @@ for (const s of SECTIONS) {
       continue;
     }
     if (page !== 'textbook' || param === undefined) continue;
+    const fromSide = gakushikiSide(s.id);
+    const toSide = gakushikiSide(param);
+    if (fromSide !== null && toSide !== null && fromSide !== toSide) {
+      err(
+        `教本 ${s.id}: 学識の区分をまたぐリンク ${to}` +
+          '（gk- は甲種化学、gm- は甲種機械。読者はどちらか一方しか読まない）',
+      );
+      continue;
+    }
     if (!sectionIds.has(param)) {
       if (plannedIds.has(param)) {
         const planned = plannedTitles.get(param) ?? '';

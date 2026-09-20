@@ -9,3 +9,5 @@ dist/
 # 中身は作業中にだけ意味があるもので、リポジトリに残す価値がない。
 out-*.txt
 review-*.txt
+out-*.log
+review-*.log
