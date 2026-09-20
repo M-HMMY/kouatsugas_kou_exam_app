@@ -843,11 +843,27 @@ for (const s of SECTIONS) {
 // リンクは警告にとどめる。載っていない id は今までどおりエラー。
 // 一覧を 2 か所に持たないよう、プロンプトの表をそのまま正本として読んでいる。
 const plannedIds = new Set<string>();
+// **予定している節の題**。まだ書かれていない節へのリンクでも、
+// ラベルがその題と食い違っていないかを見るために持っておく。
+//
+// ★ **9 つめ（高圧ガス甲種）で実際に踏んだ型なので足しました**（2026 年 9 月 20 日）。
+//   8 つめから法令の教本をそのまま引き継いだところ、**保安管理技術の節を割り直した**ので、
+//   法令から張ってある 7 本のリンクが**黙って別のテーマを指すようになりました。**
+//   `ho-33` は乙種では「置換の手順」、こちらの割り方では「リスクアセスメント」です。
+//
+//   **それまでの検査は素通りします。**ID は予定表にあるので
+//   「まだ書かれていない節へのリンク」の警告になるだけで、**中身が違うことは分かりません。**
+//   **本文を別のアプリから引き継ぐときに必ず起きる**ので、検査にしてあります。
+const plannedTitles = new Map<string, string>();
 {
   const promptPath = 'scripts/prompts/00-common.md';
   if (existsSync(promptPath)) {
     const md = readFileSync(promptPath, 'utf8');
-    for (const m of md.matchAll(/^\| `([a-z]+-?\d+)` \|/gm)) plannedIds.add(m[1]);
+    for (const m of md.matchAll(/^\| `([a-z]+-?\d+)` \| ([^|]*) \|/gm)) {
+      plannedIds.add(m[1]);
+      // 予定タイトルには `**強調**` と補足の括弧が付く。どちらも外して比べる。
+      plannedTitles.set(m[1], m[2].replace(/\*\*/g, '').trim());
+    }
   }
   if (plannedIds.size === 0) {
     warn('scripts/prompts/00-common.md から節 ID の一覧を読めなかった（表の書式が変わった可能性）');
@@ -870,7 +886,18 @@ for (const s of SECTIONS) {
     if (page !== 'textbook' || param === undefined) continue;
     if (!sectionIds.has(param)) {
       if (plannedIds.has(param)) {
-        warn(`教本 ${s.id}: まだ書かれていない節へのリンク ${to}（その章を書けば消えます）`);
+        const planned = plannedTitles.get(param) ?? '';
+        // ラベルが予定タイトルのどこにも出てこないなら、**別のテーマを指している**疑い。
+        // 逆向き（予定タイトルがラベルに含まれる）も許す。章を書くときに題を縮めることがある。
+        if (planned !== '' && !planned.includes(label) && !label.includes(planned)) {
+          err(
+            `教本 ${s.id}: リンク ${to} のラベル「${label}」が、` +
+              `予定している節の題「${planned}」と食い違っています` +
+              '（節を割り直したときにずれた可能性。docs/section-plan.md を見ること）',
+          );
+        } else {
+          warn(`教本 ${s.id}: まだ書かれていない節へのリンク ${to}（その章を書けば消えます）`);
+        }
       } else {
         err(`教本 ${s.id}: 存在しない節へのリンク ${to}`);
       }
