@@ -39,6 +39,35 @@ function dupes(label: string, ids: string[]): void {
 const categoryIds = new Set(CATEGORIES.map((c) => c.id));
 const sectionIds = new Set(SECTIONS.map((s) => s.id));
 
+// ---- 節の並び順 ----
+// **目次も「次の節へ」も、SECTIONS の並び順で決まります。**
+// 節 id の番号は節の割り方（docs/section-plan.md）そのものなので、
+// **並びが番号順になっていなければ、読者は学習の順序を飛ばして読まされます。**
+//
+// ★ **2026 年 9 月 21 日に `gm-heat` で実際に起きました。**
+//   返ってきたファイルの並びが gm-14, gm-18, gm-19, gm-20, gm-16, gm-17, gm-15 で、
+//   **配列の末尾に .sort() を付けて実行時に直して**ありました。
+//   表示順は正しかったので**どの検査も鳴りません**でしたが、
+//   ほかの 22 章は素の配列なので、**そこだけ作りが違う**状態でした。
+//   .sort() を外して並べ替えたうえで、**並びそのもの**を検査に足しています。
+{
+  const seen = new Map<string, number>();
+  for (const s2 of SECTIONS) {
+    const m = /^([a-z]+)-(\d+)$/.exec(s2.id);
+    if (m === null) continue;
+    const prefix = m[1];
+    const num = Number(m[2]);
+    const last = seen.get(prefix);
+    if (last !== undefined && num <= last) {
+      err(
+        `教本 ${s2.id}: 節の並びが番号順になっていない（前は ${prefix}-${last}）。` +
+          '目次と「次の節へ」がこの順で出るので、章ファイルの配列を並べ替えること',
+      );
+    }
+    seen.set(prefix, num);
+  }
+}
+
 // ---- ID の重複 ----
 dupes('分野', CATEGORIES.map((c) => c.id));
 dupes('教本セクション', SECTIONS.map((s) => s.id));
