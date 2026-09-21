@@ -1271,10 +1271,37 @@ if (warnings.length > 0) {
   warnings.forEach((w) => console.log('  ' + w));
   console.log('');
 }
+
+// ---- 最後に、読み飛ばされやすい注意をもう一度出す ----
+//
+// **実際に起きた（2026 年 9 月 22 日）。**
+// 正解の位置が 225 問中 161 問で 4 番目、学識は 60 問中 59 問が 3 要素の組、
+// という状態を、この検査は**最初から警告していた。**
+// それでも 72 問を書き終えるまで気づかなかった。理由は 2 つある。
+//
+// 1. **注意が 100 件を超えていた。**大半は「問題文がやや長い」「本文が薄い」で、
+//    本当に見るべき 40 件がその中に埋もれた
+// 2. **最後の行が「整合性チェック: エラーなし」だけだった。**
+//    出力の末尾を読むと、注意を 1 件も見ないまま「通った」と判断できてしまう
+//
+// だから、**長さの注意（見て判断すればよいもの）と、それ以外（直すべきもの）を分け、
+// 最後の行に件数を必ず載せる。**
+const isLengthNote = (w: string): boolean =>
+  /問題文が \d+ 字/.test(w) || /本文が \d+ 字/.test(w) || /解説が \d+ 字/.test(w);
+const sharp = warnings.filter((w) => !isLengthNote(w));
+if (sharp.length > 0) {
+  console.log(`--- ★ このうち、長さ以外の注意が ${sharp.length} 件 ---`);
+  sharp.forEach((w) => console.log('  ' + w));
+  console.log('');
+}
+
+const tail = warnings.length === 0 ? '' : `（注意 ${warnings.length} 件、うち長さ以外 ${sharp.length} 件）`;
 if (errors.length === 0) {
-  console.log('整合性チェック: エラーなし');
+  console.log('整合性チェック: エラーなし' + tail);
 } else {
   console.log(`--- エラー ${errors.length} 件 ---`);
   errors.forEach((e) => console.log('  ' + e));
+  console.log('');
+  console.log(`整合性チェック: エラー ${errors.length} 件` + tail);
   process.exit(1);
 }
