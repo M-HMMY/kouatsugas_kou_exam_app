@@ -332,7 +332,7 @@ R_o=\\frac{1}{h_o\\pi d_oL},\\quad R_w=\\frac{\\ln(d_o/d_i)}{2\\pi\\lambda L},\\
 で、
 
 \`\`\`math
-R_{total}=R_o+R_w+R_i,qquad Q=\\frac{\\Delta T}{R_{total}}
+R_{total}=R_o+R_w+R_i,\\qquad Q=\\frac{\\Delta T}{R_{total}}
 \`\`\`
 
 です。これが式の根拠です。
@@ -583,7 +583,7 @@ Q=\\dot m_oc_{p,o}(T_{o,out}-T_{o,in})
 基準 $b$ を明示して
 
 \`\`\`math
-Q=U_bA_b\\Delta T_m,qquad A_b=\\frac{Q}{U_b\\Delta T_m}
+Q=U_bA_b\\Delta T_m,\\qquad A_b=\\frac{Q}{U_b\\Delta T_m}
 \`\`\`
 
 です。$\\Delta T_m$ は指示がなければ対数平均、算術平均の指定があればその指示に従います。
@@ -591,7 +591,7 @@ Q=U_bA_b\\Delta T_m,qquad A_b=\\frac{Q}{U_b\\Delta T_m}
 平均径基準なら
 
 \`\`\`math
-A_m=\\pi d_mL,qquadL=\\frac{Q}{U_m\\pi d_m\\Delta T_m}
+A_m=\\pi d_mL,\\qquad L=\\frac{Q}{U_m\\pi d_m\\Delta T_m}
 \`\`\`
 
 です。内面基準なら $d_i$、外面基準なら $d_o$ を使います。平均径基準の $U_m$ に外径面積を組み合わせてはいけません。複数本なら $A=N\\pi dL_1$ とし、総延長か一本の長さかも読み分けます。
@@ -629,6 +629,16 @@ $\\mathrm{kg/h}\\times\\mathrm{kJ/kg}$ の結果は kJ/h で、そのまま W �
 ①記号と単位を置く、②$Q=\\dot m_s(h_g-h_f)=\\dot m_oc_p\\Delta T_o$ と熱収支を書く、③指定基準で抵抗を合成して $U_m$ などを出す、④端温度差を定義して平均温度差を出す、⑤$A=Q/(U\\Delta T_m)$、⑥$A=\\pi dL$ から $L$、⑦必要なら反対側の収支から未知流量、⑧時間・熱量・長さの単位を検算します。
 
 $Q$ が増せば $L$ は増え、$U,d,\\Delta T_m$ が増せば $L$ は減ることも極限の検算です。
+
+**★ ここで止めないでください。**手順 ⑤⑥ のあと、**与えられた値を入れた 1 行**と、**単位を付けた答えの 1 行**が要ります。物性値は問題文が与えるので、答案では次の形になります。
+
+\`\`\`math
+A=\\frac{Q}{U_m\\Delta T_m},\\qquad L=\\frac{A}{\\pi d_m}
+\`\`\`
+
+「$Q=\\text{（問題文の値）}$、$U_m=\\text{（③で出した値）}$、$\\Delta T_m=\\text{（④で出した値）}$ を代入すると $A=\\text{（数値）}\\ \\mathrm{m^2}$、したがって **$L=\\text{（数値）}\\ \\mathrm{m}$**」と結びます。
+
+**単位のない数字で終わらせないこと。**伝熱面積は $\\mathrm{m^2}$、管長さは $\\mathrm{m}$ です。
 
 # 設計式が示す向き
 
