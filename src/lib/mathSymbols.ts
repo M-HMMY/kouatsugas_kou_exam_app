@@ -19,6 +19,7 @@ export const SYMBOL: Record<string, string> = {
   times: '×', cdot: '·', div: '÷', pm: '±', mp: '∓', circ: '∘',
   le: '≤', leq: '≤', ge: '≥', geq: '≥', ne: '≠', neq: '≠',
   approx: '≈', simeq: '≃', equiv: '≡', propto: '∝', sim: '∼', ll: '≪', gg: '≫',
+  lesssim: '≲', gtrsim: '≳',
   // ほぼ等しい。日本語の理工書は ≒ を使うので、LaTeX の名前から引けるようにしておく
   fallingdotseq: '≒', doteq: '≒',
   in: '∈', notin: '∉', subset: '⊂', subseteq: '⊆', supset: '⊃',
