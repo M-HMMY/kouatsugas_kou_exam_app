@@ -996,6 +996,13 @@ const COMMANDS = [
   'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'eta', 'theta', 'lambda',
   'mu', 'sigma', 'tau', 'phi', 'psi', 'omega', 'Sigma', 'Delta', 'Omega',
   'times', 'cdot', 'approx', 'propto', 'hat', 'bar', 'mathbf', 'mathbb', 'mid',
+  // ★ 2026 年 9 月 22 日に足しました。gm-heat で ,qquad と 3 か所、
+  //   バックスラッシュが落ちたまま残っていたのを、別の目に見つけてもらいました。
+  //   **この表に無い命令は、バックスラッシュが落ちても 1 つも鳴りません。**
+  // exp・sin・log などは mathrm{exp} のように**添字として**書かれるので、ここには入れない
+  'qquad', 'quad', 'ln', 'left', 'right',
+  'rho', 'nu', 'kappa', 'pi', 'varepsilon', 'dot', 'simeq', 'leq', 'geq',
+  'rightarrow', 'rightleftharpoons', 'text', 'mathrm', 'boxed',
 ];
 const mathSpan = /\$([^$\n]+)\$/g;
 const cmdRe = /\\([A-Za-z]+)/g;
@@ -1045,6 +1052,29 @@ for (const q of QUESTIONS) {
   checkMath(`問題 ${q.id}`, q.question);
   checkMath(`問題 ${q.id}`, q.explanation);
   q.choices.forEach((c) => checkMath(`問題 ${q.id}`, c));
+}
+
+// ---- 数式の命令が、数式の外に出ていないか ----
+// **このアプリのレンダラが知っている別行立ての書き方は ```math ブロックだけ**です。
+// LaTeX の角かっこ・丸かっこの書き方（バックスラッシュ ＋ かっこ）で書くと、
+// **TS のテンプレートリテラルがバックスラッシュを 1 つ食う**ので、
+// レンダラにはただのかっことして届きます。
+// **$ が無いので、上の「数式の中身」を見る検査には 1 つも掛かりません。**
+// 画面には**命令の名前が地の文に並ぶ**だけになります。
+//
+// ★ **2026 年 9 月 21 日に gm-thermo で 36 か所、実際に起きました。**
+//   そのときは目で見つけましたが、**どの検査も鳴りませんでした。**
+//   数式の中とフェンスで囲った塊を外したあとに残るバックスラッシュは、
+//   **本文では使い道がない**ので、残っていればエラーにします。
+for (const s2 of SECTIONS) {
+  let rest = s2.body.replace(/\$[^$\n]+\$/g, ' ');
+  rest = rest.replace(/```[a-z]*[\s\S]*?```/g, ' ');
+  for (const m of rest.matchAll(/\\[A-Za-z]+/g)) {
+    err(
+      `教本 ${s2.id}: 数式の命令 ${m[0]} が数式の外にあります` +
+        '（別行立ての数式はフェンスで囲った math ブロックで書くこと。LaTeX の角かっこ・丸かっこの書き方は使えません）',
+    );
+  }
 }
 
 // ---- 解説の言う正誤と、answer が指す選択肢が一致しているか ----

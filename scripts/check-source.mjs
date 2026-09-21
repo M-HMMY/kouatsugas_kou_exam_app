@@ -123,6 +123,30 @@ for (const root of ROOTS) {
       let b;
       while ((b = oddBs.exec(body)) !== null) {
         const run = b[0].length - b[1].length;
+
+        // ★★ \n だけは話が逆です（2026 年 9 月 22 日に、この検査の文言で実際に間違えました）。
+        //
+        //   ソースに \n（1 本）  → 実行時に**改行**になる。段落を分けたいときはこれでよい
+        //   ソースに \\n（2 本） → 画面に「\n」という**2 文字がそのまま出る**
+        //
+        // 下の「2 本で書いてください」を \n にも当ててしまい、
+        // **段落の区切りのつもりで入れた 71 か所が、画面に \n\n と出る状態**になりました。
+        // 既存の 100 節あまりは、ソースで実際に改行しています。そちらにそろえてください。
+        if (b[1] === 'n') {
+          if (run >= 2) {
+            problems.push({
+              file,
+              line: text.slice(0, start + b.index).split('\n').length,
+              text: body.slice(Math.max(0, b.index - 12), b.index + b[0].length + 4).replace(/\n/g, ' '),
+              why:
+                'バックスラッシュ ' + run + ' 本 + n です。**画面に n の前のバックスラッシュごと文字として出ます。**' +
+                '段落を分けたいなら、ソースで実際に改行してください',
+            });
+            break;
+          }
+          continue; // 1 本は改行になる。正しい書き方
+        }
+
         if (run % 2 === 0) continue; // 2 本ならそのまま残る
         problems.push({
           file,

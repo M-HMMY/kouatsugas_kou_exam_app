@@ -47,8 +47,9 @@ pV=nRT
 
 単位は
 
-\[\\frac{\\mathrm{Pa\\cdot m^3}}{\\mathrm{mol}\\times\\mathrm{J/(mol\\cdot K)}}
-=\\frac{\\mathrm{J}}{\\mathrm{J/K}}=\\mathrm{K}\]
+\`\`\`math
+\\frac{\\mathrm{Pa\\cdot m^3}}{\\mathrm{mol}\\times\\mathrm{J/(mol\\cdot K)}}=\\frac{\\mathrm{J}}{\\mathrm{J/K}}=\\mathrm{K}
+\`\`\`
 
 となります。ここまで書けば式の検算もできます。
 
@@ -354,13 +355,15 @@ p=\\frac{nRT}{V}
 
 です。仕事は始点から終点まで、
 
-\[W=\\int_{V_1}^{V_2}p\,dV
-=\\int_{V_1}^{V_2}\\frac{nRT}{V}\,dV\]
+\`\`\`math
+W=\\int_{V_1}^{V_2}p\,dV=\\int_{V_1}^{V_2}\\frac{nRT}{V}\,dV
+\`\`\`
 
 です。等温なので $nRT$ を積分の外へ出し、
 
-\[W=nRT\\left[\\ln V\\right]_{V_1}^{V_2}
-=nRT\\ln\\frac{V_2}{V_1}\]
+\`\`\`math
+W=nRT\\left[\\ln V\\right]_{V_1}^{V_2}=nRT\\ln\\frac{V_2}{V_1}
+\`\`\`
 
 を得ます。等温では $p_1V_1=p_2V_2$ なので、
 
@@ -521,8 +524,9 @@ pV^{\\kappa}=\\text{一定}
 
 仕事は別に、
 
-\[W=\\int_{V_1}^{V_2}p\,dV
-=\\frac{p_2V_2-p_1V_1}{1-\\kappa}\]
+\`\`\`math
+W=\\int_{V_1}^{V_2}p\,dV=\\frac{p_2V_2-p_1V_1}{1-\\kappa}
+\`\`\`
 
 とも書けます。状態方程式と $C_{m,V}=R/(\\kappa-1)$ を使えば、温度差から求めた仕事と一致します。
 
@@ -698,8 +702,9 @@ dS=\\frac{\\delta Q_{\\mathrm{rev}}}{T}
 
 同じ状態を通る理想気体について、等温線は $pV=\\text{一定}$、可逆断熱線は $pV^{\\kappa}=\\text{一定}$ です。傾きは
 
-\[\\left(\\frac{dp}{dV}\\right)_T=-\\frac{p}{V},\\qquad
-\\left(\\frac{dp}{dV}\\right)_S=-\\kappa\\frac{p}{V}\]
+\`\`\`math
+\\left(\\frac{dp}{dV}\\right)_T=-\\frac{p}{V},\\qquad\\left(\\frac{dp}{dV}\\right)_S=-\\kappa\\frac{p}{V}
+\`\`\`
 
 です。$\\kappa>1$ なので、同じ点では断熱線のほうが傾きの絶対値が大きく、等温線より急です。圧縮側では断熱により温度が上がるため、同じ体積での圧力は断熱経路のほうが高くなります。
 
