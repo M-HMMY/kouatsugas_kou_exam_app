@@ -410,16 +410,34 @@ show('体験ツールの一覧', (await visible()).slice(0, 600));
 
 {
   const toolReport = [];
-  // **★ ここは立ち上げのときに必ず空にすること。**
-  // 危険物甲種版から持ってきたときは、向こうの節 ID とウィジェット名
-  // （lw-4/baisu、lr-5/shoka、pg-2/konsai）が残っていた。**存在しない節を
-  // 開いて「描かれていない」と出るだけなので、目視では誤りに見えない。**
-  // 節に widget: を埋め込んだら、[節 ID, ウィジェット名] をここに足す。
-  const EMBEDDED = [
-  ['lw-2', 'kouatsu-hantei'],
-  ['ho-1', 'bakuhatsu-hani'],
-  ['gm-18', 'usuniku-ouryoku'],
-];
+  // **★ 手で並べるのをやめました**（2026 年 9 月 23 日）。ソースから読みます。
+  //
+  // ここには元々 [節 ID, ウィジェット名] を手で書く決まりがあり、
+  // 「立ち上げのときに必ず空にすること」という注意書きまで付けてありました。
+  // **それでも、乙種版の組（ho-1/bakuhatsu-hani、gm-18/usuniku-ouryoku）が残ったまま
+  // 3 回目の再発をしました**（2026 年 9 月 23 日に気づいた）。
+  //
+  // **この型は目視では見つかりません。**存在しない節を開いて
+  // 「描かれていない」と出るだけで、**本物の不具合とまったく同じ顔をします。**
+  // 逆に、**実際に埋め込んだのに書き足し忘れたもの**は、黙って素通りします。
+  // 実際 `tekiyou-jogai` は法令の節に埋め込んであるのに、一度も押されていませんでした。
+  //
+  // `ALL_SECTIONS` と同じ考え方で、**教本のソースを文字列として読みます。**
+  // 節 ID と widget: の出てくる順に並べ、直前の節 ID と組にします。
+  const EMBEDDED = (() => {
+    const dir = 'src/data/textbook';
+    const pairs = [];
+    for (const name of readdirSync(dir)) {
+      if (!name.endsWith('.ts') || name === 'index.ts') continue;
+      const text = readFileSync(join(dir, name), 'utf8');
+      let section = null;
+      for (const m of text.matchAll(/^\s*id: '([a-z]+-?\d+)',|widget:([a-z0-9-]+)/gm)) {
+        if (m[1] !== undefined) section = m[1];
+        else if (section !== null) pairs.push([section, m[2]]);
+      }
+    }
+    return pairs;
+  })();
   toolReport.push(
     EMBEDDED.length
       ? '教本に埋め込んだウィジェット: ' + EMBEDDED.map(([, w]) => w).join(' / ')

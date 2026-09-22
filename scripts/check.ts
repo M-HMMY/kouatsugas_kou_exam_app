@@ -1249,6 +1249,38 @@ for (const s2 of SECTIONS) {
 // 記法としては正しくても、描くと崩れている場合がある（強調の中の数式など）。
 for (const p of renderCheck()) err(p);
 
+// ---- render-check の手書きの一覧が、ファイルと合っているか ----
+//
+// **★ 実際に起きた（2026 年 9 月 23 日）。**
+// `render-check.tsx` の `WIDGETS` が**空のまま**で、
+// 「まだ 1 つも作っていない」という引き継ぎ元のコメントごと残っていた。
+// **ウィジェット 7 つの描画検査が、一度も走っていなかった。**
+//
+// あちらは import が要るので機械では並べられない。**だから数だけ突き合わせる。**
+// 足し忘れれば、ここが鳴る。
+{
+  const files = existsSync('src/components/widgets')
+    ? readdirSync('src/components/widgets').filter((f) => f.endsWith('.tsx'))
+    : [];
+  const listed = existsSync('scripts/render-check.tsx')
+    ? [...readFileSync('scripts/render-check.tsx', 'utf8').matchAll(/^\s*\['([a-z0-9-]+)',/gm)].map((m) => m[1])
+    : [];
+  for (const f of files) {
+    const id = f.replace(/\.tsx$/, '');
+    if (!listed.includes(id)) {
+      err(
+        `ウィジェット ${id} が scripts/render-check.tsx の WIDGETS に無い。` +
+          '足さないと、そのウィジェットだけ描画の検査が素通りする',
+      );
+    }
+  }
+  for (const id of listed) {
+    if (!files.includes(id + '.tsx')) {
+      err(`scripts/render-check.tsx の WIDGETS に ${id} があるが、ファイルが無い`);
+    }
+  }
+}
+
 // ---- 集計して表示 ----
 const sectionsPerCategory = new Map<string, number>();
 for (const s of SECTIONS) sectionsPerCategory.set(s.categoryId, (sectionsPerCategory.get(s.categoryId) ?? 0) + 1);

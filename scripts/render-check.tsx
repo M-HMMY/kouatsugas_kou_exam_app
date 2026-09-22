@@ -4,6 +4,13 @@ import { Markdown } from '../src/lib/markdown';
 import { SECTIONS } from '../src/data/textbook';
 import { QUESTIONS } from '../src/data/questions';
 import { DRILLS } from '../src/data/drills';
+import AssyukuKeisuu from '../src/components/widgets/assyuku-keisuu';
+import BakuhatsuHani from '../src/components/widgets/bakuhatsu-hani';
+import JoutaiHouteishiki from '../src/components/widgets/joutai-houteishiki';
+import KouatsuHantei from '../src/components/widgets/kouatsu-hantei';
+import RironKuuki from '../src/components/widgets/riron-kuuki';
+import TekiyouJogai from '../src/components/widgets/tekiyou-jogai';
+import UsunikuOuryoku from '../src/components/widgets/usuniku-ouryoku';
 
 /**
  * 実際に描いてみて、画面に出てはいけないものが残っていないかを見る検査。
@@ -19,15 +26,31 @@ import { DRILLS } from '../src/data/drills';
  */
 
 const BACKSLASH = String.fromCharCode(92);
+const BACKTICK3 = String.fromCharCode(96).repeat(3);
 
 /**
  * ウィジェットは import.meta.glob 経由だと check から読めないので、ここに直接並べる。
- * `src/components/widgets/` にファイルを足したら、この一覧にも足すこと
- * （足し忘れても動くが、描画の検査だけ素通りしてしまう）。
+ *
+ * **★ ここは 2026 年 9 月 23 日まで、空のまま死んでいました。**
+ * 「まだ 1 つも作っていない」というコメントが**引き継ぎ元のまま残り**、
+ * その下の検査（$ が出ている／NaN が出ている／描画に失敗する）が
+ * **7 つ全部について一度も走っていませんでした。**
+ *
+ * **手で並べる一覧は、いつか必ず古くなります。**
+ * `check.ts` の `KNOWN_WIDGETS` はディレクトリを直接読む形に直してあるのに、
+ * こちらだけ手書きのまま取り残されていた、という形の抜けです。
+ * **ここは import が要るので機械では並べられません。**
+ * だから `check.ts` に**「ファイルの数とこの一覧の数が合っているか」の検査を足してあります。**
+ * 足し忘れれば、そちらが鳴ります。
  */
 const WIDGETS: [string, ComponentType][] = [
-  // まだ 1 つも作っていない。`src/components/widgets/<id>.tsx` を足したら、
-  // import 文とこの一覧の両方へ足すこと。
+  ['assyuku-keisuu', AssyukuKeisuu],
+  ['bakuhatsu-hani', BakuhatsuHani],
+  ['joutai-houteishiki', JoutaiHouteishiki],
+  ['kouatsu-hantei', KouatsuHantei],
+  ['riron-kuuki', RironKuuki],
+  ['tekiyou-jogai', TekiyouJogai],
+  ['usuniku-ouryoku', UsunikuOuryoku],
 ];
 
 /** 数式として描かれた部分だけを取り出す */
@@ -54,6 +77,30 @@ function inspect(label: string, source: string, problems: string[]): void {
     problems.push(`${label}: $ が数式にならず本文に出ている → ${html.slice(Math.max(0, at - 40), at + 40).replace(/<[^>]+>/g, '')}`);
   }
   if (html.includes('未対応の図の種類')) problems.push(`${label}: 未対応の図がある`);
+
+  // **★ 記法の生の記号が、画面に文字として残っていないか**（2026 年 9 月 23 日に足した）。
+  //
+  // `scripts/drive.mjs` は「記法の生の記号が出ている」を見ていたが、
+  // **あれは dev サーバを起こさないと走らない。**`npm run check` では素通りしていた。
+  // 実際 `gk-7` が、**強調が成立せず `**` を画面に出したまま**通っていた。
+  // 原因は、強調の中身に `*` を許さない正規表現に、
+  // 数式の上付きの星（飽和蒸気圧の $p_A^*$）が当たったこと（`src/lib/markdown.tsx`）。
+  //
+  // **タグを外してから見る。**`**` は属性値に現れないが、
+  // `::` は CSS 由来で出うるので、本文の文字だけにしてから数える。
+  const shown = html
+    .replace(/<br\s*\/?>/g, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&');
+  for (const mark of ['**', '::', BACKTICK3]) {
+    if (shown.includes(mark)) {
+      const at = shown.indexOf(mark);
+      problems.push(
+        `${label}: 「${mark}」が記法として効かず画面に出ている → ` +
+          shown.slice(Math.max(0, at - 30), at + 40).replace(/\n/g, ' '),
+      );
+    }
+  }
 }
 
 /** 見つかった問題の一覧を返す。空なら異常なし */
