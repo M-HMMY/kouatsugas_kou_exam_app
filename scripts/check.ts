@@ -1148,14 +1148,23 @@ for (const s2 of SECTIONS) {
   const ledgerRaw = existsSync('docs/primary-numbers.md')
     ? readFileSync('docs/primary-numbers.md', 'utf8')
     : '';
-  const DROP = '### ★ 書きたかったが、台帳に無いので外した値';
+  //
+  // ★ 「外した値」の節は 1 つとは限らない（2026 年 9 月 23 日に 2 つめができた）。
+  //   見出しを決め打ちにしていたので、**新しく作った節が読み飛ばされず、
+  //   外したはずの値を「台帳にある」と言うところだった。**
+  //   見出しが「外した値」で終わる `###` の節は、すべて落とす。
   let ledger = ledgerRaw;
   {
-    const from = ledgerRaw.indexOf(DROP);
-    if (from >= 0) {
-      const nextHead = ledgerRaw.indexOf('\n### ', from + DROP.length);
+    const heads = [...ledgerRaw.matchAll(/^### .*外した値.*$/gm)];
+    if (heads.length === 0) {
+      err('docs/primary-numbers.md に「外した値」の節が 1 つも無い（検査が効いていない可能性）');
+    }
+    // 後ろから消す。前から消すと index がずれる。
+    for (const h of heads.reverse()) {
+      const from = h.index ?? 0;
+      const nextHead = ledgerRaw.indexOf('\n### ', from + h[0].length);
       const to = nextHead < 0 ? ledgerRaw.length : nextHead;
-      ledger = ledgerRaw.slice(0, from) + ledgerRaw.slice(to);
+      ledger = ledger.slice(0, from) + ledger.slice(to);
     }
   }
   /** 表記ゆれを 1 つに寄せる */
