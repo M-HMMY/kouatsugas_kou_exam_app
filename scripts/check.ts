@@ -1279,6 +1279,50 @@ for (const p of renderCheck()) err(p);
       err(`scripts/render-check.tsx の WIDGETS に ${id} があるが、ファイルが無い`);
     }
   }
+
+  // ---- 体験ツールの画面でも、全部がどれかのグループに入っているか ----
+  //
+  // **★ 実際に起きた（2026 年 9 月 23 日）。**
+  // 新しく作った 5 つが `Tools.tsx` の `GROUPS` に無く、**「その他」へ落ちていた。**
+  // **画面から消えるわけではないので、目で見ても不具合に見えない。**
+  // 章立てと関係ない場所に並ぶだけなので、気づかないまま公開されうる。
+  const tools = existsSync('src/pages/Tools.tsx') ? readFileSync('src/pages/Tools.tsx', 'utf8') : '';
+  const grouped = new Set(
+    [...tools.matchAll(/ids: \[([^\]]*)\]/g)].flatMap((m) =>
+      [...m[1].matchAll(/'([a-z0-9-]+)'/g)].map((x) => x[1]),
+    ),
+  );
+  for (const f of files) {
+    const id = f.replace(/\.tsx$/, '');
+    if (!grouped.has(id)) {
+      err(
+        `ウィジェット ${id} が src/pages/Tools.tsx の GROUPS に無い。` +
+          '体験ツールの画面で「その他」へ落ちる（消えないので目では気づけない）',
+      );
+    }
+  }
+  for (const id of grouped) {
+    if (!files.includes(id + '.tsx')) {
+      err(`src/pages/Tools.tsx の GROUPS に ${id} があるが、ファイルが無い`);
+    }
+  }
+
+  // ---- 作ったウィジェットが、教本のどこかに埋め込まれているか ----
+  //
+  // **★ 実際に起きた（2026 年 9 月 23 日）。**
+  // 引き継いだ 7 つのうち **5 つがどこの節にも埋め込まれていなかった。**
+  // 体験ツールの一覧には出るので画面上は存在するが、
+  // **教本を読んでいる人の目には入らない。**置いただけで終わっていた。
+  const embedded = new Set<string>();
+  for (const s2 of SECTIONS) {
+    for (const m of s2.body.matchAll(/widget:([a-z0-9-]+)/g)) embedded.add(m[1]);
+  }
+  for (const f of files) {
+    const id = f.replace(/\.tsx$/, '');
+    if (!embedded.has(id)) {
+      warn(`ウィジェット ${id} が、教本のどの節にも埋め込まれていない（置いただけになっている）`);
+    }
+  }
 }
 
 // ---- 集計して表示 ----

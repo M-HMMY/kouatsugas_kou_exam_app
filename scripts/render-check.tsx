@@ -6,9 +6,14 @@ import { QUESTIONS } from '../src/data/questions';
 import { DRILLS } from '../src/data/drills';
 import AssyukuKeisuu from '../src/components/widgets/assyuku-keisuu';
 import BakuhatsuHani from '../src/components/widgets/bakuhatsu-hani';
+import HannouJisuu from '../src/components/widgets/hannou-jisuu';
 import JoutaiHouteishiki from '../src/components/widgets/joutai-houteishiki';
+import KiekiHeikou from '../src/components/widgets/kieki-heikou';
 import KouatsuHantei from '../src/components/widgets/kouatsu-hantei';
+import NetsuTeikou from '../src/components/widgets/netsu-teikou';
+import Reynolds from '../src/components/widgets/reynolds';
 import RironKuuki from '../src/components/widgets/riron-kuuki';
+import TaisuuHeikin from '../src/components/widgets/taisuu-heikin';
 import TekiyouJogai from '../src/components/widgets/tekiyou-jogai';
 import UsunikuOuryoku from '../src/components/widgets/usuniku-ouryoku';
 
@@ -46,9 +51,14 @@ const BACKTICK3 = String.fromCharCode(96).repeat(3);
 const WIDGETS: [string, ComponentType][] = [
   ['assyuku-keisuu', AssyukuKeisuu],
   ['bakuhatsu-hani', BakuhatsuHani],
+  ['hannou-jisuu', HannouJisuu],
   ['joutai-houteishiki', JoutaiHouteishiki],
+  ['kieki-heikou', KiekiHeikou],
   ['kouatsu-hantei', KouatsuHantei],
+  ['netsu-teikou', NetsuTeikou],
+  ['reynolds', Reynolds],
   ['riron-kuuki', RironKuuki],
+  ['taisuu-heikin', TaisuuHeikin],
   ['tekiyou-jogai', TekiyouJogai],
   ['usuniku-ouryoku', UsunikuOuryoku],
 ];
