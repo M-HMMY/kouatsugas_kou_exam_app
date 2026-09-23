@@ -1334,6 +1334,62 @@ for (const p of renderCheck()) err(p);
   }
 }
 
+// ---- ★ 確認問題の sectionId が、その内容を扱っている節を指しているか ----
+//
+// **★★ 実際に 9 問ずれていた**（2026 年 9 月 23 日）。
+// `law-ope` は 12 問中 6 問で、**「貯槽への 90 % 充塡」が「修理・清掃」の節を
+// 指している**という状態だった。`law-vessel-6` は超低温容器の定義を問うのに
+// **「容器検査と刻印」**を指していた。
+//
+// **これまでの検査は、sectionId が実在するかしか見ていなかった。**
+// 実在はするので鳴らない。**画面上も「復習する」が別の節へ飛ぶだけで、壊れて見えない。**
+//
+// 問題文の特徴語を、どの節がいちばん多く持っているかで測る。
+// **節をまたぐ問は普通にあるので、差が大きいものだけ注意にする。**
+//
+// **★ 法令（`lw-`）の問だけを見る。**
+// 法令の節は条文のまとまりで切ってあるので、1 つの問は 1 つの節に属する。
+// **学識は節どうしが語彙を共有する**ので、同じ測り方をすると誤検知になる
+// （`gk-26` の分解爆発の問が `gk-16` の燃焼の反応式に、
+// `gm-32` の水素侵食の問が `gm-29` の高温材料に引かれた。どちらも今のままが正しい）。
+// **見つかった 9 件のうち 7 件が法令だったので、法令だけで十分に効く。**
+{
+  // どこにでも出る語は特徴語にしない。
+  const STOP = new Set([
+    '記述', '正しい', 'どれか', 'もの', 'こと', 'ための', 'ときは', 'について',
+    '場合', '高圧ガス', '容器', '製造', '設備', '施設', '規則', '規定', '技術',
+    '基準', '必要', '措置', '適用', '対象', '以上', '以下', '未満', '次の',
+  ]);
+  const terms = (s: string): string[] => {
+    const out = new Set<string>();
+    for (const m of s.matchAll(/[一-龥]{2,}|[ァ-ヴー]{3,}/g)) {
+      if (!STOP.has(m[0])) out.add(m[0]);
+    }
+    return [...out];
+  };
+
+  for (const q of QUESTIONS) {
+    if (q.sectionId === undefined || !q.sectionId.startsWith('lw-')) continue;
+    const ts = terms(q.question);
+    if (ts.length < 4) continue;
+    const score = (body: string): number => ts.filter((t) => body.includes(t)).length;
+    const mine = score(SECTIONS.find((s) => s.id === q.sectionId)?.body ?? '');
+    let best = { id: q.sectionId, n: mine };
+    for (const s of SECTIONS) {
+      // 同じ科目の節とだけ比べる（法令の問を学識の節と比べても意味がない）
+      if (s.id[0] !== q.sectionId[0]) continue;
+      const n = score(s.body);
+      if (n > best.n) best = { id: s.id, n };
+    }
+    if (best.id !== q.sectionId && best.n >= mine + 4) {
+      warn(
+        `問題 ${q.id}: sectionId が ${q.sectionId}（特徴語 ${mine}/${ts.length}）だが、` +
+          `${best.id}（${best.n}/${ts.length}）のほうが当てはまる`,
+      );
+    }
+  }
+}
+
 // ---- ★ 学識が記述式であると、画面に書き続けているか ----
 //
 // **CLAUDE.md が二度、いちばん強い言い方で釘を刺している決めごとである。**
