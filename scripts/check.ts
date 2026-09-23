@@ -1325,6 +1325,50 @@ for (const p of renderCheck()) err(p);
   }
 }
 
+// ---- ★ 学識が記述式であると、画面に書き続けているか ----
+//
+// **CLAUDE.md が二度、いちばん強い言い方で釘を刺している決めごとである。**
+//
+// > ★ 学識について「本番は記述式である」と画面に書き続けること。
+// > この 1 行を落とすと、アプリが試験の形について嘘をつきます
+// > ★ 模試の画面に「この模試の学識は本番の形式ではない」と必ず書くこと。消さないでください
+//
+// **それなのに、守っていたのはソースのコメントだけだった**（2026 年 9 月 23 日に気づいた）。
+// このリポジトリでは「消さないでください」と書いただけの約束が、
+// **`drive.mjs` の `EMBEDDED`・`render-check.tsx` の `WIDGETS`・`Tools.tsx` の `GROUPS` と、
+// すでに 3 回抜けている。**だから検査にする。
+//
+// **★ コメントを剥いでから見る。**コメントに書いてあっても画面には出ない。
+{
+  const strip = (src: string): string =>
+    src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+
+  const mockPath = 'src/pages/Mock.tsx';
+  if (existsSync(mockPath)) {
+    const shown = strip(readFileSync(mockPath, 'utf8'));
+    if (!shown.includes('記述式')) {
+      err(
+        `${mockPath} の画面に出るところに「記述式」が無い。` +
+          '学識を択一で出しているのに本番の形式を書かないと、アプリが試験の形について嘘をつく',
+      );
+    }
+    // 甲種化学 6 問 / 甲種機械 5 問。どちらの区分の模試にも出す。
+    for (const n of ['6 問', '5 問']) {
+      if (!shown.includes(n)) {
+        warn(`${mockPath} の画面に「記述式 ${n}」の断りが見当たらない（区分ごとに書くこと）`);
+      }
+    }
+  }
+
+  // 科目の説明（`FIELDS` の note）でも、学識には記述式と書く。
+  for (const f of FIELDS) {
+    if (f.id !== 'gaku-kagaku' && f.id !== 'gaku-kikai') continue;
+    if (!f.note.includes('記述式')) {
+      err(`FIELDS の ${f.id} の note に「記述式」が無い（${f.name} は本番が記述式）`);
+    }
+  }
+}
+
 // ---- 集計して表示 ----
 const sectionsPerCategory = new Map<string, number>();
 for (const s of SECTIONS) sectionsPerCategory.set(s.categoryId, (sectionsPerCategory.get(s.categoryId) ?? 0) + 1);
