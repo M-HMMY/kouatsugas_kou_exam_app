@@ -19,7 +19,7 @@ export const gmStrength: TextbookSection[] = [
 \\sigma=\\frac{F}{A}
 \`\`\`
 
-です。引張りを正、圧縮を負とします。断面に沿う力 $F_s$ によるせん断応力は $\\tau=F_s/A$ です。$F$ が N、$A$ が $\\mathrm{m^2}$ なら、単位は $\\mathrm{N/m^2}=Pa$ です。$1\,\\mathrm{MPa}=1\,\\mathrm{N/mm^2}$ なので、N と $\\mathrm{mm^2}$ で計算した値は MPa になります。
+です。引張りを正、圧縮を負とします。断面に沿う力 $F_s$ によるせん断応力は $\\tau=F_s/A$ です。$F$ が N、$A$ が $\\mathrm{m^2}$ なら、単位は $\\mathrm{N/m^2}=Pa$ です。$1\\ \\mathrm{MPa}=1\\ \\mathrm{N/mm^2}$ なので、N と $\\mathrm{mm^2}$ で計算した値は MPa になります。
 
 元の長さ $L$ が $\\Delta L$ だけ伸びたとき、縦ひずみは
 
@@ -83,7 +83,7 @@ export const gmStrength: TextbookSection[] = [
 ヤング率の単位は :: 応力と同じ Pa または MPa です
 弾性限度を越えると何が残るか :: 荷重を除いても塑性ひずみが残ります
 引張強さとは :: 公称応力が最大になる値です
-$1\,\\mathrm{MPa}$ は :: $1\,\\mathrm{N/mm^2}$ です
+$1\\ \\mathrm{MPa}$ は :: $1\\ \\mathrm{N/mm^2}$ です
 \`\`\`
 `,
   },
@@ -238,7 +238,7 @@ $\\sigma_z$ が**軸応力（長手応力）**です。作用面積は、外径�
 \\sigma_h=2\\sigma_z
 \`\`\`
 
-同じ $p,D,t$ なら、円周応力は軸応力の 2 倍です。単位は $pD/t$ が $\\mathrm{Pa\,m/m}=Pa$。$t$ を 2 倍にすれば両応力は半分、$p$ または $D$ を 2 倍にすれば 2 倍です。
+同じ $p,D,t$ なら、円周応力は軸応力の 2 倍です。単位は $pD/t$ が $\\mathrm{Pa\\ m/m}=Pa$。$t$ を 2 倍にすれば両応力は半分、$p$ または $D$ を 2 倍にすれば 2 倍です。
 
 # 記述式の答案
 

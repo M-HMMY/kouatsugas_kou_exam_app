@@ -19,7 +19,7 @@ export const gmHeat: TextbookSection[] = [
 q=-\\lambda\\frac{dT}{dx},\\qquad Q=\\lambda A\\frac{\\Delta T}{x}
 \`\`\`
 
-です。負号は熱が高温側から低温側へ向かうことを表します。$\\lambda$ の単位は $\\mathrm{W/(m\,K)}$ です。
+です。負号は熱が高温側から低温側へ向かうことを表します。$\\lambda$ の単位は $\\mathrm{W/(m\\ K)}$ です。
 
 # 熱伝達—表面と流体の間で渡す
 
@@ -29,7 +29,7 @@ q=-\\lambda\\frac{dT}{dx},\\qquad Q=\\lambda A\\frac{\\Delta T}{x}
 Q=hA(T_f-T_w)=hA\\Delta T
 \`\`\`
 
-で表します。$h$ は**熱伝達率**で、単位は $\\mathrm{W/(m^2\,K)}$ です。$\\lambda$ は物体内部の性質、$h$ は流れや表面状態まで含む係数です。
+で表します。$h$ は**熱伝達率**で、単位は $\\mathrm{W/(m^2\\ K)}$ です。$\\lambda$ は物体内部の性質、$h$ は流れや表面状態まで含む係数です。
 
 対流には、温度差による密度差と浮力で流れる**自然対流**と、ポンプや送風機で流す**強制対流**があります。強制対流では流速を上げると一般に境膜が薄くなり、$h$ が大きくなります。
 
@@ -45,9 +45,9 @@ Q=\\varepsilon\\sigma A(T_1^4-T_2^4)
 
 | 機構 | 基本式 | 係数の単位 | 場所 |
 | --- | --- | --- | --- |
-| 熱伝導 | $Q=\\lambda A\\Delta T/x$ | $\\mathrm{W/(m\,K)}$ | 固体内部など |
-| 熱伝達 | $Q=hA\\Delta T$ | $\\mathrm{W/(m^2\,K)}$ | 固体表面と流体の間 |
-| 放射 | $Q=\\varepsilon\\sigma A(T_1^4-T_2^4)$ | $\\sigma$: $\\mathrm{W/(m^2\,K^4)}$ | 固体、高温ガス |
+| 熱伝導 | $Q=\\lambda A\\Delta T/x$ | $\\mathrm{W/(m\\ K)}$ | 固体内部など |
+| 熱伝達 | $Q=hA\\Delta T$ | $\\mathrm{W/(m^2\\ K)}$ | 固体表面と流体の間 |
+| 放射 | $Q=\\varepsilon\\sigma A(T_1^4-T_2^4)$ | $\\sigma$: $\\mathrm{W/(m^2\\ K^4)}$ | 固体、高温ガス |
 
 どの式も結果は W です。熱伝導なら $\\mathrm{W/(mK)}\\times\\mathrm{m^2}\\times\\mathrm{K}/\\mathrm{m}=W$、熱伝達なら $\\mathrm{W/(m^2K)}\\times\\mathrm{m^2}\\times\\mathrm{K}=W$ です。
 
@@ -69,7 +69,7 @@ Q=\\varepsilon\\sigma A(T_1^4-T_2^4)
 
 非定常なら蓄熱項が必要です。
 
-> **試験のポイント** $\\lambda$ は $\\mathrm{W/(m\,K)}$、$h$ は $\\mathrm{W/(m^2\,K)}$。名前が似ても単位が違います。
+> **試験のポイント** $\\lambda$ は $\\mathrm{W/(m\\ K)}$、$h$ は $\\mathrm{W/(m^2\\ K)}$。名前が似ても単位が違います。
 
 > **よくある勘違い** 「放射は固体表面だけ」… **高温のガス体にも放射は生じます。**
 
@@ -84,8 +84,8 @@ Q=\\varepsilon\\sigma A(T_1^4-T_2^4)
 
 \`\`\`quiz
 固体内部の伝熱機構は :: 熱伝導です
-熱伝導率の単位は :: $\\mathrm{W/(m\,K)}$ です
-熱伝達率の単位は :: $\\mathrm{W/(m^2\,K)}$ です
+熱伝導率の単位は :: $\\mathrm{W/(m\\ K)}$ です
+熱伝達率の単位は :: $\\mathrm{W/(m^2\\ K)}$ です
 熱伝達の基本式は :: $Q=hA\\Delta T$ です
 自然対流の流れを起こすものは :: 温度差による密度差と浮力です
 放射は高温のガス体にも生じるか :: 生じます
@@ -476,10 +476,10 @@ $U$ の答えに必ず添えるものは :: 内面・外面・平均径のどの
 \\Delta T_{lm}=\\frac{\\Delta T_1-\\Delta T_2}{\\ln(\\Delta T_1/\\Delta T_2)}
 \`\`\`
 
-微小面積で $dQ=U\\Delta T\,dA$ と書き、両流体の熱収支を結ぶと
+微小面積で $dQ=U\\Delta T\\ dA$ と書き、両流体の熱収支を結ぶと
 
 \`\`\`math
-\\frac{d(\\Delta T)}{\\Delta T}=-K\,dA
+\\frac{d(\\Delta T)}{\\Delta T}=-K\\ dA
 \`\`\`
 
 の形になります。全長で積分すると対数が現れます。つまり、**温度差が直線ではなく指数関数的に変わる**ため、対数平均が必要です。
@@ -621,15 +621,15 @@ A_m=\\pi d_mL,\\qquad L=\\frac{Q}{U_m\\pi d_m\\Delta T_m}
 - mm を m へ
 
 \`\`\`math
-\\dot m\,[\\mathrm{kg/s}]\\times\\Delta h\,[\\mathrm{J/kg}]=Q\,[\\mathrm{W}]
+\\dot m\\ [\\mathrm{kg/s}]\\times\\Delta h\\ [\\mathrm{J/kg}]=Q\\ [\\mathrm{W}]
 \`\`\`
 
 \`\`\`math
-\\frac{Q\,[\\mathrm{W}]}{U\,[\\mathrm{W/(m^2K)}]\\Delta T\,[\\mathrm K]}=A\,[\\mathrm{m^2}]
+\\frac{Q\\ [\\mathrm{W}]}{U\\ [\\mathrm{W/(m^2K)}]\\Delta T\\ [\\mathrm K]}=A\\ [\\mathrm{m^2}]
 \`\`\`
 
 \`\`\`math
-\\frac{A\,[\\mathrm{m^2}]}{\\pi d\,[\\mathrm m]}=L\,[\\mathrm m]
+\\frac{A\\ [\\mathrm{m^2}]}{\\pi d\\ [\\mathrm m]}=L\\ [\\mathrm m]
 \`\`\`
 
 $\\mathrm{kg/h}\\times\\mathrm{kJ/kg}$ の結果は kJ/h で、そのまま W ではありません。桁が $10^3$ ずれる事故は、式より単位で起こります。
@@ -735,7 +735,7 @@ Q=m(h_g-h_f),\\qquad Q=\\dot m(h_g-h_f)
 単位は
 
 \`\`\`math
-\\dot m\,[\\mathrm{kg/s}]\\Delta h\,[\\mathrm{J/kg}]=Q\,[\\mathrm W]
+\\dot m\\ [\\mathrm{kg/s}]\\Delta h\\ [\\mathrm{J/kg}]=Q\\ [\\mathrm W]
 \`\`\`
 
 です。kg/h と kJ/kg を掛ければ kJ/h なので、W にするには換算が要ります。
