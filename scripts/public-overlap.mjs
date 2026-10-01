@@ -3,6 +3,12 @@
 //   node scripts/public-overlap.mjs          # 保安管理技術・学識・記述式解答例と比べる
 //   node scripts/public-overlap.mjs law      # 法令の冊子も比べる（条文の文言が大量に出る）
 //   node scripts/public-overlap.mjs 20       # 20 字以上だけ（既定 15）
+//   node scripts/public-overlap.mjs prompts  # 執筆プロンプト（scripts/prompts/*.md）も比べる
+//
+// ★ prompts を足したわけ（2026 年 10 月 1 日）。最初の複製の根は、**執筆プロンプトが公開問題の記述を
+//   原文のまま引き、それが本文へ流れた**ことだった。プロンプトは公開リポジトリに入っているのに、
+//   この道具は src/ しか見ていなかった。プロンプトの「」付きの引用は分析として許されるが、
+//   **引用であると分かる形か**、**本文に流れていないか**を、ここで確かめる。
 //
 // ★ なぜ要るか（2026 年 9 月 30 日）
 //   公開問題は KHK の著作物で、CLAUDE.md の「公開のルール」は「原文のまま収録しない」。
@@ -41,6 +47,7 @@ const FILES = [
 
 const args = process.argv.slice(2);
 const withLaw = args.includes('law');
+const withPrompts = args.includes('prompts');
 const MIN = Number(args.find((a) => /^\d+$/.test(a)) ?? 15);
 const K = 10;
 
@@ -102,7 +109,7 @@ function walk(d, out = []) {
   for (const n of readdirSync(d)) {
     const p = join(d, n);
     if (statSync(p).isDirectory()) walk(p, out);
-    else if (/\.(ts|tsx)$/.test(n)) out.push(p);
+    else if (/\.(ts|tsx|md)$/.test(n)) out.push(p);
   }
   return out;
 }
@@ -116,7 +123,7 @@ const SHORT_TOTAL = 24;
 
 const hits = [];
 const clusters = [];
-for (const file of walk('src')) {
+for (const file of [...walk('src'), ...(withPrompts ? walk('scripts/prompts') : [])]) {
   readFileSync(file, 'utf8')
     .split(/\r?\n/)
     .forEach((line, li) => {
