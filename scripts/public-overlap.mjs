@@ -70,6 +70,9 @@ async function load(f) {
 function norm(s) {
   return s
     .replace(/[Ａ-Ｚａ-ｚ０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0))
+    // 強調・数式・リンクの記号で一致が切れないように落とす（2 巡目で `**` を挟んだ写しがすり抜けた）
+    .replace(/\*\*|\$|`/g, '')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/[\s　]/g, '')
     .replace(/[、，,]/g, '、')
     .replace(/[。．]/g, '。')
@@ -104,12 +107,21 @@ function walk(d, out = []) {
   return out;
 }
 
+// ★ 短い一致が 1 行に何か所も並ぶ型も拾う（2026 年 10 月 1 日）。
+//   「両流体の」「および」を削っただけの写しは、一致が 14 字以下に刻まれて 15 字の判定をすり抜けた。
+//   10 字以上の一致が 1 行に SHORT_COUNT か所以上あり、合計が SHORT_TOTAL 字以上なら挙げる。
+const SHORT = 10;
+const SHORT_COUNT = 2;
+const SHORT_TOTAL = 24;
+
 const hits = [];
+const clusters = [];
 for (const file of walk('src')) {
   readFileSync(file, 'utf8')
     .split(/\r?\n/)
     .forEach((line, li) => {
       const t = norm(line);
+      const short = [];
       let i = 0;
       while (i + K <= t.length) {
         const cand = index.get(t.slice(i, i + K));
@@ -125,10 +137,15 @@ for (const file of walk('src')) {
           if (L > best) [best, src] = [L, p];
         }
         const text = t.slice(i, i + best);
-        if (best >= MIN && !BOILERPLATE.test(text)) {
-          hits.push({ where: `${file.replace(/\\/g, '/')}:${li + 1}`, len: best, text, src: src.label });
+        if (!BOILERPLATE.test(text)) {
+          if (best >= MIN) hits.push({ where: `${file.replace(/\\/g, '/')}:${li + 1}`, len: best, text, src: src.label });
+          else if (best >= SHORT) short.push(text);
         }
         i += Math.max(1, best);
+      }
+      const total = short.reduce((a, s) => a + s.length, 0);
+      if (short.length >= SHORT_COUNT && total >= SHORT_TOTAL) {
+        clusters.push({ where: `${file.replace(/\\/g, '/')}:${li + 1}`, total, parts: short });
       }
     });
 }
@@ -136,3 +153,6 @@ for (const file of walk('src')) {
 hits.sort((a, b) => b.len - a.len || a.where.localeCompare(b.where));
 for (const h of hits) console.log(`${String(h.len).padStart(3)}  ${h.where}  [${h.src}]  ${h.text}`);
 console.log(`--- 公開問題との ${MIN} 字以上の一致: ${hits.length} 件${withLaw ? '（法令の冊子を含む）' : ''}`);
+clusters.sort((a, b) => b.total - a.total || a.where.localeCompare(b.where));
+for (const c of clusters) console.log(`${String(c.total).padStart(3)}  ${c.where}  ${c.parts.join(' ／ ')}`);
+console.log(`--- ${SHORT} 字以上の一致が 1 行に ${SHORT_COUNT} か所以上（合計 ${SHORT_TOTAL} 字以上）: ${clusters.length} 件`);
